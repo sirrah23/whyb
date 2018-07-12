@@ -1,11 +1,7 @@
 <template>
   <div id="app">
     <div id="header">
-      <h1>Where have you been?</h1>
-    </div>
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/map">Map</router-link>
+      <h1 class="display-4">Where have you been?</h1>
     </div>
     <router-view/>
   </div>
