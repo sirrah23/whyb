@@ -8,13 +8,13 @@ export default new Vuex.Store({
     locations: []
   },
   mutations: {
-    addLocation(state, loc){
+    addLocation (state, loc) {
       state.locations.push(loc)
     }
   },
-  getters:{
-    locations(state){
-      return state.locations;
+  getters: {
+    locations (state) {
+      return state.locations
     }
   }
 })

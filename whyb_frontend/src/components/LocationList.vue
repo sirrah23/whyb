@@ -5,10 +5,10 @@
       <input type="text" name="location" placeholder="Location" v-model="location">
       <input type="text" name="latitude" placeholder="Latitude" v-model="latitude">
       <input type="text" name="longitude" placeholder="Longitude" v-model="longitude">
-      <button id="location-list-add" type="button" @click="LocationListAppend">Add</button>
+      <button id="location-list-add" type="button" @click="locationListAppend">Add</button>
     </form>
     <ul>
-      <div class="location-list-item" v-for="location in locations">
+      <div class="location-list-item" v-for="(location, index) in locations" :key="index">
         <li>Location: {{ location.location }}</li>
         <li>Latitide: {{ location.latitude }}</li>
         <li>Longitude: {{ location.longitude }}</li>
@@ -20,25 +20,35 @@
 <script>
 export default {
   name: 'LocationList',
-  data:{
-    location: "",
-    latitude: "",
-    longitude: "",
+  data: function () {
+    return {
+      location: '',
+      latitude: '',
+      longitude: ''
+    }
   },
-  methods:{
-    LocationListAppend(){
-      const loc = {
+  methods: {
+    buildLocObj () {
+      return {
         location: this.location,
         latitude: this.latitude,
         longitude: this.longitude
       }
-      this.$store.commit("addLocation", loc)
-      console.log(this.$store.state)
+    },
+    clearUIInput () {
+      this.location = ''
+      this.latitude = ''
+      this.longitude = ''
+    },
+    locationListAppend () {
+      const loc = this.buildLocObj()
+      this.$store.commit('addLocation', loc)
+      this.clearUIInput()
     }
   },
-  computed:{
-    locations(){
-      return this.$store.getters.locations;
+  computed: {
+    locations () {
+      return this.$store.getters.locations
     }
   }
 }
