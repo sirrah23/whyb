@@ -20,26 +20,26 @@ describe('ListLocation.vue', () => {
   })
 
   it('Renders locations when locations are available', () => {
-      store.commit(
-          'addLocation',
-          {
-            locationName: 'Location A',
-            latitude: 30,
-            longitude: 30,
-            latitudeDirection: 'N',
-            longitudeDirection: 'E'
-          }
-      )
-      store.commit(
-          'addLocation',
-          {
-            locationName: 'Location B',
-            latitude: 45,
-            longitude: 50,
-            latitudeDirection: 'S',
-            longitudeDirection: 'W'
-          }
-      )
+    store.commit(
+      'addLocation',
+      {
+        locationName: 'Location A',
+        latitude: 30,
+        longitude: 30,
+        latitudeDirection: 'N',
+        longitudeDirection: 'E'
+      }
+    )
+    store.commit(
+      'addLocation',
+      {
+        locationName: 'Location B',
+        latitude: 45,
+        longitude: 50,
+        latitudeDirection: 'S',
+        longitudeDirection: 'W'
+      }
+    )
     const wrapper = shallowMount(LocationList, {store, localVue})
     const locations = wrapper.findAll('.location-list-item')
     expect(locations.length).to.equal(2)

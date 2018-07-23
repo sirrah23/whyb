@@ -63,8 +63,8 @@ export default {
       uiLocationName: '',
       uiLatitude: '',
       uiLongitude: '',
-      uiLatitudeDirection:'',
-      uiLongitudeDirection:'',
+      uiLatitudeDirection: '',
+      uiLongitudeDirection: '',
       latitudeDirections: ['North', 'South'],
       longitudeDirections: ['East', 'West']
     }
