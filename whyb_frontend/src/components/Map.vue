@@ -17,25 +17,24 @@ export default {
     return {
       'ps': null,
       'script': null,
-      'width': 0,
-      'height': 0,
       'canvas': null,
       'map': null
     }
   },
   mounted () {
     // NOTE: This code was obtained from https://github.com/processing/p5.js/issues/2646
-    // TODO: Clean this code up
 
     const mappa = new Mappa('Leaflet')
 
     this.script = p => {
       p.setup = _ => {
-        this.canvas = p.createCanvas(0, 0)
-        this.canvas.parent(this.$refs.canvas)
-        console.log(this.canvas.parent())
-        this.canvas.width = this.canvas.parent().parentElement.clientWidth // gross code
-        this.canvas.height = this.canvas.parent().parentElement.clientHeight
+        // Initialize the canvas
+        // Make the canvas the same size as the v-flex wrapper around it
+        const canvasDiv = this.$refs.canvas
+        this.canvas = p.createCanvas(canvasDiv.parentElement.clientWidth, canvasDiv.parentElement.clientHeight)
+        this.canvas.parent(canvasDiv)
+
+        // Initialize the map
         const options = {
           lat: 0,
           lng: 0,
@@ -44,9 +43,18 @@ export default {
         }
         this.map = mappa.tileMap(options)
         this.map.overlay(this.canvas)
+        this.map.onChange(p.drawPoints)
       }
 
-      p.draw = _ => {
+      p.drawPoints = _ => {
+        // Draw a dot on the map for each location in the list
+        p.clear()
+        p.fill(200, 100, 100)
+        let locMap
+        for (let i = 0; i < this.$store.getters.locations.length; i++) {
+          locMap = this.map.latLngToPixel(this.$store.getters.locations[i].latitude, this.$store.getters.locations[i].longitude)
+          p.ellipse(locMap.x, locMap.y, 20, 20)
+        }
       }
     }
 
