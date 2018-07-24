@@ -25,9 +25,7 @@ describe('ListLocation.vue', () => {
       {
         locationName: 'Location A',
         latitude: 30,
-        longitude: 30,
-        latitudeDirection: 'N',
-        longitudeDirection: 'E'
+        longitude: 30
       }
     )
     store.commit(
@@ -35,9 +33,7 @@ describe('ListLocation.vue', () => {
       {
         locationName: 'Location B',
         latitude: 45,
-        longitude: 50,
-        latitudeDirection: 'S',
-        longitudeDirection: 'W'
+        longitude: 50
       }
     )
     const wrapper = shallowMount(LocationList, {store, localVue})

@@ -1,6 +1,6 @@
 <template>
   <div data-app>
-      <v-flex xs12 sm6 offset-sm3 fill-height>
+      <v-flex xs12 sm6 offset-sm3 fill-height mt-4>
         <v-card height=500>
           <div ref="canvas"></div>
         </v-card>
