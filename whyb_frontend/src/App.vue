@@ -3,9 +3,37 @@
     <div id="header">
       <h1 class="display-4">Where have you been?</h1>
     </div>
-    <router-view/>
+    <router-view @authenticated="setAuthenticated" />
+    <router-link v-if="authenticated" to="/login" @click.native="logout" replace>Logout</router-link>
   </div>
 </template>
+
+<script>
+  export default{
+    name: "App",
+    data(){
+      return {
+        authenticated: false
+      }
+    },
+    mounted(){
+      if(!this.authenticated){
+        this.$router.replace({name:"login"})
+      }
+    },
+    methods: {
+      setAuthenticated(status){
+        this.authenticated = status
+        if(status){
+          this.$router.replace({name: "home"})
+        }
+      },
+      logout(){
+        this.setAuthenticated(false)
+      }
+    }
+  }
+</script>
 
 <style>
 #app {
