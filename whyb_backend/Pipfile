@@ -4,10 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
+pylint = "<2.0.0"
 
 [packages]
 flask-jwt = "*"
 flask = "*"
+flask-sqlalchemy = "*"
 
 [requires]
 python_version = "2.7"
