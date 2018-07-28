@@ -10,6 +10,7 @@ pylint = "<2.0.0"
 flask-jwt = "*"
 flask = "*"
 flask-sqlalchemy = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "2.7"

@@ -1,6 +1,9 @@
 <template>
     <div data-app id="login">
         <v-flex xs12 sm6 offset-sm3 mt-4>
+            <div id="auth-warn" class="red--text" v-if="authFail">
+                Invalid Credentials
+            </div>
             <v-form>
                 <v-text-field
                     label="Username"
@@ -22,20 +25,31 @@
 </template>
 
 <script>
+import api from '@/api.js'
+import auth from '@/auth_token.js'
+
 export default {
   name: 'Login',
   data: function () {
     return {
-        username: null,
-        password: null
+      username: null,
+      password: null,
+      authFail: false
     }
   },
   methods: {
-      submit(){
-          if(this.username == this.$parent.fakeAccount.username && this.password == this.$parent.fakeAccount.password){
-              this.$emit("authenticated", true)
+    submit () {
+      api.auth(this.username, this.password)
+        .then(res => {
+          if (res.err) {
+            this.authFail = true
+            return
           }
-      }
+          this.authFail = false
+          auth.set_auth_token(res.data)
+          this.$emit('authenticated', true)
+        })
+    }
   }
 }
 </script>

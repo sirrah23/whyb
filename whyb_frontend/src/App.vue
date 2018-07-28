@@ -9,30 +9,42 @@
 </template>
 
 <script>
-  export default{
-    name: "App",
-    data(){
-      return {
-        authenticated: false
+import auth from '@/auth_token.js'
+
+export default{
+  name: 'App',
+  data () {
+    return {
+      authenticated: false
+    }
+  },
+  mounted () {
+    if (!this.checkAuthentication()) {
+      this.$router.replace({name: 'login'})
+    } else {
+      this.$router.replace({name: 'home'})
+    }
+  },
+  methods: {
+    isAuthenticated () {
+      return this.authenticated
+    },
+    checkAuthentication () {
+      this.authenticated = auth.is_auth_token()
+      return this.authenticated
+    },
+    setAuthenticated (status) {
+      this.authenticated = status
+      if (status && auth.is_auth_token()) {
+        this.$router.replace({name: 'home'})
       }
     },
-    mounted(){
-      if(!this.authenticated){
-        this.$router.replace({name:"login"})
-      }
-    },
-    methods: {
-      setAuthenticated(status){
-        this.authenticated = status
-        if(status){
-          this.$router.replace({name: "home"})
-        }
-      },
-      logout(){
-        this.setAuthenticated(false)
-      }
+    logout () {
+      this.setAuthenticated(false)
+      auth.clear_auth_token()
     }
   }
+}
 </script>
 
 <style>

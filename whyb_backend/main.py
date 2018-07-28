@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_jwt import JWT, jwt_required, current_identity
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from werkzeug.security import safe_str_cmp
 
 
@@ -9,6 +10,7 @@ app.debug = True
 app.config['SECRET_KEY'] = 'super-secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
+CORS(app)
 
 
 class User(db.Model):

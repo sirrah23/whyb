@@ -1,6 +1,8 @@
 <template>
   <div class="login">
-      <Login @authenticated="propogateAuthenticated"/>
+      <Login
+      @authenticated="propogateAuthenticated"
+      />
   </div>
 </template>
 
@@ -9,21 +11,16 @@ import Login from '@/components/Login.vue'
 
 export default {
   name: 'login',
-  data(){
-    return {
-        fakeAccount:{
-            username: "test",
-            password: "test"
-        }
-    }
+  data () {
+    return {}
   },
   methods: {
-      propogateAuthenticated(){
-          this.$emit("authenticated", true)
-      }
+    propogateAuthenticated () {
+      this.$emit('authenticated', true)
+    }
   },
   components: {
-      Login
+    Login
   }
 }
 </script>
