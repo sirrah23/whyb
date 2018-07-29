@@ -71,9 +71,9 @@ class LocationListResource(Resource):
         user_id = current_identity.id
 
         location = Location(
-            name=args.name, 
-            latitude=args.latitude, 
-            longitude=args.longitude, 
+            name=args.name,
+            latitude=args.latitude,
+            longitude=args.longitude,
             user_id=user_id)
 
         db.session.add(location)
@@ -87,12 +87,16 @@ class LocationResource(Resource):
 
     decorators = [jwt_required()]
 
+    @staticmethod
+    def userHasAccess(location, user_id):
+        return location.user_id == user_id
+
     def get(self, location_id):
         user_id = current_identity.id
         location = Location.query.get(location_id)
         if not location:
             return {'message': 'Location not found', 'data': {}}, 404
-        if location.user_id != user_id:
+        if not LocationResource.userHasAccess(location, user_id):
             return {'message': 'Access to this location is not authorized', "data": {}}, 401
         return {
             'message': 'Success',
@@ -103,10 +107,17 @@ class LocationResource(Resource):
                 "longitude": location.longitude
             }
         }, 200
-    
+
     def delete(self, location_id):
-        # TODO: Implement this
-        pass
+        user_id = current_identity.id
+        location = Location.query.get(location_id)
+        if not location:
+            return {'message': 'Location not found', 'data': {}}, 404
+        if not LocationResource.userHasAccess(location, user_id):
+            return {'message': 'Access to this location is not authorized', "data": {}}, 401
+        db.delete(location)
+        db.flush()
+        return '', 204
 
 
 api.add_resource(LocationListResource, '/locations')
