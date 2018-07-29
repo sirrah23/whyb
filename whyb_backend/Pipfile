@@ -11,6 +11,7 @@ flask-jwt = "*"
 flask = "*"
 flask-sqlalchemy = "*"
 flask-cors = "*"
+flask-restful = "*"
 
 [requires]
 python_version = "2.7"

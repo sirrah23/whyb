@@ -2,6 +2,7 @@ from flask import Flask
 from flask_jwt import JWT, jwt_required, current_identity
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_restful import Resource, Api, reqparse
 from werkzeug.security import safe_str_cmp
 
 
@@ -10,6 +11,7 @@ app.debug = True
 app.config['SECRET_KEY'] = 'super-secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
+api = Api(app)
 CORS(app)
 
 
@@ -31,7 +33,7 @@ class Location(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
-        return "Location({},{},{},{})".format(self.id, self.name, self.latitude, self.longitude)
+        return 'Location({},{},{},{})'.format(self.id, self.name, self.latitude, self.longitude)
 
 
 def authenticate(username, password):
@@ -49,6 +51,66 @@ jwt = JWT(app, authenticate, identity)
 @jwt_required()
 def protected():
     return '%s' % current_identity
+
+
+class LocationListResource(Resource):
+
+    decorators = [jwt_required()]
+
+    def get(self):
+        user = current_identity
+        location_ids = [location.id for location in user.locations]
+        return {'message':'Success', 'data': location_ids}, 200
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('name', required=True)
+        parser.add_argument('latitude', required=True)
+        parser.add_argument('longitude', required=True)
+        args = parser.parse_args()
+        user_id = current_identity.id
+
+        location = Location(
+            name=args.name, 
+            latitude=args.latitude, 
+            longitude=args.longitude, 
+            user_id=user_id)
+
+        db.session.add(location)
+        db.session.commit()
+
+        args.id = location.id
+        return {'message':'Success', 'data': args}, 201
+
+
+class LocationResource(Resource):
+
+    decorators = [jwt_required()]
+
+    def get(self, location_id):
+        user_id = current_identity.id
+        location = Location.query.get(location_id)
+        if not location:
+            return {'message': 'Location not found', 'data': {}}, 404
+        if location.user_id != user_id:
+            return {'message': 'Access to this location is not authorized', "data": {}}, 401
+        return {
+            'message': 'Success',
+            'data': {
+                "id": location.id,
+                "name": location.name,
+                "latitude": location.latitude,
+                "longitude": location.longitude
+            }
+        }, 200
+    
+    def delete(self, location_id):
+        # TODO: Implement this
+        pass
+
+
+api.add_resource(LocationListResource, '/locations')
+api.add_resource(LocationResource, '/location/<int:location_id>')
 
 
 if __name__ == '__main__':
