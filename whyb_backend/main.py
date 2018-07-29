@@ -115,8 +115,8 @@ class LocationResource(Resource):
             return {'message': 'Location not found', 'data': {}}, 404
         if not LocationResource.userHasAccess(location, user_id):
             return {'message': 'Access to this location is not authorized', "data": {}}, 401
-        db.delete(location)
-        db.flush()
+        db.session.delete(location)
+        db.session.commit()
         return '', 204
 
 
