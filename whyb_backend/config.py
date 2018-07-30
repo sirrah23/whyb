@@ -6,14 +6,23 @@ class Config(object):
 
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///site.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///site_prod.db'
 
 
 class DevelopmentConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///site.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///site_dev.db'
     DEBUG = True
 
 
 class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///site_test.db'
     TESTING = True
+
+
+def getConfigObject(cfg_type):
+    cfg_map = {
+        'production'  : ProductionConfig,
+        'development' : DevelopmentConfig,
+        'testing'     : TestingConfig,
+    }
+    return cfg_map.get(cfg_type.lower(), Config)

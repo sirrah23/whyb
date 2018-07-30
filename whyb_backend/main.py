@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask_jwt import JWT, jwt_required, current_identity
 from flask_sqlalchemy import SQLAlchemy
@@ -7,13 +8,20 @@ from werkzeug.security import safe_str_cmp
 import config
 
 
+# Create app
 app = Flask(__name__)
-app.config.from_object(config.DevelopmentConfig)
+
+# Configure app
+config_type = os.environ.get('CONFIG_TYPE', '')
+app.config.from_object(config.getConfigObject(config_type))
+
+# Flask plugins
 db = SQLAlchemy(app)
 api = Api(app)
 CORS(app)
 
 
+# Database models
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
@@ -35,6 +43,11 @@ class Location(db.Model):
         return 'Location({},{},{},{})'.format(self.id, self.name, self.latitude, self.longitude)
 
 
+# Create tables if they don't exist already
+db.create_all()
+
+
+# JSON Web Token authentication
 def authenticate(username, password):
     user = User.query.filter_by(username=username).first()
     if user and safe_str_cmp(user.password.encode('utf-8'), password.encode('utf-8')):
@@ -52,6 +65,7 @@ def protected():
     return '%s' % current_identity
 
 
+# REST API resources
 class LocationListResource(Resource):
 
     decorators = [jwt_required()]
