@@ -4,12 +4,11 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_restful import Resource, Api, reqparse
 from werkzeug.security import safe_str_cmp
+import config
 
 
 app = Flask(__name__)
-app.debug = True
-app.config['SECRET_KEY'] = 'super-secret'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config.from_object(config.DevelopmentConfig)
 db = SQLAlchemy(app)
 api = Api(app)
 CORS(app)
