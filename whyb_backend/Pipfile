@@ -12,6 +12,7 @@ flask = "*"
 flask-sqlalchemy = "*"
 flask-cors = "*"
 flask-restful = "*"
+flask-testing = "*"
 
 [requires]
 python_version = "2.7"
