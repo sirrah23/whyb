@@ -114,10 +114,10 @@ class LocationResource(Resource):
         return {
             'message': 'Success',
             'data': {
-                "id": location.id,
-                "name": location.name,
-                "latitude": location.latitude,
-                "longitude": location.longitude
+                'id': location.id,
+                'name': location.name,
+                'latitude': location.latitude,
+                'longitude': location.longitude
             }
         }, 200
 
