@@ -1,11 +1,11 @@
 import json
 from flask_testing import TestCase
-from main import app, db, User
+from main import app, db, User, bcrypt
 from config import TestingConfig
 
 
 def create_user(username, password):
-    u1 = User(username=username, password=password)
+    u1 = User(username=username, password=bcrypt.generate_password_hash(password))  # TODO: Remove this logic from testing code
     db.session.add(u1)
     db.session.commit()
     return u1
@@ -31,7 +31,7 @@ class JWTTestCase(BaseTestCase):
         u1 = create_user('test1', 'password')
         response = self.client.post(
             '/auth',
-            data=json.dumps({'username': u1.username, 'password': u1.password}),
+            data=json.dumps({'username': 'test1', 'password': 'password'}),
             content_type="application/json")
         self.assert200(response)
         assert u'access_token' in response.json.keys()
@@ -46,16 +46,16 @@ class JWTTestCase(BaseTestCase):
 
 class LocationListTestCase(BaseTestCase):
 
-    def _get_jwt_token(self, user):
+    def _get_jwt_token(self, username, password):
         response = self.client.post(
             '/auth',
-            data=json.dumps({'username': user.username, 'password': user.password}),
+            data=json.dumps({'username': username, 'password': password}),
             content_type="application/json")
         return response.json['access_token']
 
     def test_create_location(self):
         u1 = create_user('test1', 'password')
-        token = self._get_jwt_token(u1)
+        token = self._get_jwt_token('test1', 'password')
         response = self.client.post(
             '/locations',
             data=json.dumps({'name':'Location X', 'latitude': 0, 'longitude': 0}),
@@ -71,7 +71,7 @@ class LocationListTestCase(BaseTestCase):
 
     def test_get_nonexistent_locations(self):
         u1 = create_user('test1', 'password')
-        token = self._get_jwt_token(u1)
+        token = self._get_jwt_token('test1', 'password')
         response = self.client.get(
             '/locations',
             headers={"Authorization":"JWT {}".format(token)})
@@ -80,7 +80,7 @@ class LocationListTestCase(BaseTestCase):
 
     def test_get_existent_locations(self):
         u1 = create_user('test1', 'password')
-        token = self._get_jwt_token(u1)
+        token = self._get_jwt_token('test1', 'password')
         response_l1 = self.client.post(
             '/locations',
             data=json.dumps({'name':'Location X', 'latitude': 0, 'longitude': 0}),
@@ -107,9 +107,9 @@ class LocationListTestCase(BaseTestCase):
 
     def test_get_locations_different_user(self):
         u1 = create_user('test1', 'password')
-        token1 = self._get_jwt_token(u1)
+        token1 = self._get_jwt_token('test1', 'password')
         u2 = create_user('test2', 'password')
-        token2 = self._get_jwt_token(u2)
+        token2 = self._get_jwt_token('test2', 'password')
         response_u1 = self.client.post(
             '/locations',
             data=json.dumps({'name':'Location X', 'latitude': 0, 'longitude': 0}),
@@ -139,16 +139,16 @@ class LocationListTestCase(BaseTestCase):
 
 class LocationTestCase(BaseTestCase):
 
-    def _get_jwt_token(self, user):
+    def _get_jwt_token(self, username, password):
         response = self.client.post(
             '/auth',
-            data=json.dumps({'username': user.username, 'password': user.password}),
+            data=json.dumps({'username': username, 'password': password}),
             content_type="application/json")
         return response.json['access_token']
 
     def test_get_location(self):
         u1 = create_user('test1', 'password')
-        token = self._get_jwt_token(u1)
+        token = self._get_jwt_token('test1', 'password')
         response_create = self.client.post(
             '/locations',
             data=json.dumps({'name':'Location X', 'latitude': 0, 'longitude': 0}),
@@ -168,7 +168,7 @@ class LocationTestCase(BaseTestCase):
 
     def test_delete_location(self):
         u1 = create_user('test1', 'password')
-        token = self._get_jwt_token(u1)
+        token = self._get_jwt_token('test1', 'password')
         response_create = self.client.post(
             '/locations',
             data=json.dumps({'name':'Location X', 'latitude': 0, 'longitude': 0}),
@@ -192,3 +192,41 @@ class LocationTestCase(BaseTestCase):
         self.assertStatus(response_delete, 204)
         # Get of deleted fails
         self.assert404(response_get_2)
+
+
+class RegistrationTestCase(BaseTestCase):
+
+    def test_successfull_registration(self):
+        assert 0 == len(User.query.all())
+        username = "test1"
+        password = "password"
+        res = self.client.post(
+            '/register',
+            data=json.dumps({'username': username, 'password': password}),
+            content_type='application/json')
+        self.assertStatus(res, 201)
+        assert 1 == len(User.query.all())
+        user = User.query.all()[0]
+        assert user.username == username
+        assert user.password != password  # Storing hashed password
+        
+    def test_failed_registration(self):
+        assert 0 == len(User.query.all())
+        username = "test1"
+        password = "password"
+        res = self.client.post(
+            '/register',
+            data=json.dumps({'username': username, 'password': password}),
+            content_type='application/json')
+        self.assertStatus(res, 201)
+        assert 1 == len(User.query.all())
+        user = User.query.all()[0]
+        assert user.username == username
+        assert user.password != password  # Storing hashed password
+
+        res = self.client.post(
+            '/register',
+            data=json.dumps({'username': username, 'password': password}),
+            content_type='application/json')
+        self.assert400(res)  # User already exists
+        

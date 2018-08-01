@@ -1,9 +1,10 @@
 import os
-from flask import Flask
+from flask import Flask, request
 from flask_jwt import JWT, jwt_required, current_identity
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_restful import Resource, Api, reqparse
+from flask_bcrypt import Bcrypt
 from werkzeug.security import safe_str_cmp
 import config
 
@@ -18,6 +19,7 @@ app.config.from_object(config.getConfigObject(config_type))
 # Flask plugins
 db = SQLAlchemy(app)
 api = Api(app)
+bcrypt = Bcrypt(app)
 CORS(app)
 
 
@@ -50,7 +52,7 @@ db.create_all()
 # JSON Web Token authentication
 def authenticate(username, password):
     user = User.query.filter_by(username=username).first()
-    if user and safe_str_cmp(user.password.encode('utf-8'), password.encode('utf-8')):
+    if user and bcrypt.check_password_hash(user.password, password):
         return user
 
 def identity(payload):
@@ -59,10 +61,19 @@ def identity(payload):
 
 jwt = JWT(app, authenticate, identity)
 
-@app.route('/protected')
-@jwt_required()
-def protected():
-    return '%s' % current_identity
+@app.route('/register', methods=['POST'])
+def register():
+    content = request.json
+    if (not 'username' in content) or (not 'password' in content):
+        return 'Missing username or password', 400
+    user = User.query.filter_by(username=content['username']).first()
+    if user:
+        return 'Username is taken', 400
+    hashed_password = bcrypt.generate_password_hash(content['password'])
+    user = User(username=content['username'], password=hashed_password) 
+    db.session.add(user)
+    db.session.commit()
+    return '', 201
 
 
 # REST API resources
