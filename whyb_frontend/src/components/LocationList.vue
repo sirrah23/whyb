@@ -25,12 +25,12 @@
         </v-btn>
       </v-form>
     </v-flex>
-    <div class="location-list-item" v-for="(location, index) in locations" :key="index">
+    <div class="location-list-item" v-for="location in locations" :key="location.id">
       <v-layout>
           <v-flex xs12 sm6 offset-sm3>
             <v-expansion-panel>
               <v-expansion-panel-content>
-              <div slot="header">{{location.locationName}}</div>
+              <div slot="header">{{location.name}}</div>
               <v-card>
                 <v-card-text>Latitude: {{location.latitude}}</v-card-text>
                 <v-card-text>Longitude: {{location.longitude}}</v-card-text>
@@ -44,6 +44,9 @@
 </template>
 
 <script>
+import auth from '@/auth_token.js'
+import api from '@/api.js'
+
 export default {
   name: 'LocationList',
   data: function () {
@@ -56,7 +59,7 @@ export default {
   methods: {
     buildLocObj () {
       return {
-        locationName: this.uiLocationName,
+        name: this.uiLocationName,
         latitude: this.uiLatitude,
         longitude: this.uiLongitude
       }
@@ -67,9 +70,18 @@ export default {
       this.uiLongitude = ''
     },
     locationListAppend () {
+      const token = auth.get_auth_token()
       const loc = this.buildLocObj()
-      this.$store.commit('addLocation', loc)
-      this.clearUIInput()
+      api.locationAPI.addLocation(token, loc)
+        .then((res) => {
+          if(res.err){
+            console.log(err); //TODO: Do something useful?
+            return
+          }
+          this.$store.commit('addLocation', res.data.data)
+          this.clearUIInput()
+        })
+        .catch(e => console.log(e))
     }
   },
   computed: {

@@ -1,13 +1,13 @@
 import axios from 'axios'
 
-const API_HOST = 'http://localhost:5000'
-
-export default {
-  fullAPIPath (path) {
+function fullAPIPath (path) {
+    const API_HOST = 'http://localhost:5000'
     return `${API_HOST}/${path}`
-  },
-  async auth (username, password) {
-    const api = this.fullAPIPath('auth')
+}
+
+const authAPI = {
+  async tokenRequest (username, password) {
+    const api = fullAPIPath('auth')
     const data = {username, password}
     const config = {
       headers: {
@@ -23,3 +23,30 @@ export default {
     }
   }
 }
+
+const locationAPI = {
+  async addLocation(token, {name, latitude, longitude}){
+    const api = fullAPIPath('locations')
+    const data = {name, latitude, longitude}
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': `JWT ${token}`
+      }
+    }
+    try {
+      const res = await axios.post(api, data, config)
+      console.log(res.data)
+      return {err: null, data: res.data}
+    } catch (err) {
+      return {err, data: null}
+    }
+  }
+}
+
+export default {
+  authAPI,
+  locationAPI
+}
+

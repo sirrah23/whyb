@@ -39,7 +39,7 @@ export default {
   },
   methods: {
     submit () {
-      api.auth(this.username, this.password)
+      api.authAPI.tokenRequest(this.username, this.password)
         .then(res => {
           if (res.err) {
             this.authFail = true
