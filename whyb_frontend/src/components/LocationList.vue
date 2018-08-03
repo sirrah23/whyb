@@ -27,7 +27,7 @@
     </v-flex>
     <div class="location-list-item" v-for="location in locations" :key="location.id">
       <v-layout>
-          <v-flex xs12 sm6 offset-sm3>
+          <v-flex xs12 sm6 offset-sm3 mt-3 mb-3>
             <v-expansion-panel>
               <v-expansion-panel-content>
               <div slot="header">{{location.name}}</div>
@@ -88,6 +88,16 @@ export default {
     locations () {
       return this.$store.getters.locations
     }
+  },
+  mounted(){
+    const token = auth.get_auth_token()
+    if(!token) return
+    api.locationAPI.getLocationsDetail(token)
+      .then(locs => {
+        for(let i = 0; i < locs.length; i++)
+          this.$store.commit('addLocation', locs[i])
+        })
+      .catch(e => console.log(e))
   }
 }
 </script>

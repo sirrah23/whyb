@@ -37,11 +37,55 @@ const locationAPI = {
     }
     try {
       const res = await axios.post(api, data, config)
-      console.log(res.data)
       return {err: null, data: res.data}
     } catch (err) {
       return {err, data: null}
     }
+  },
+  async getLocations(token){
+    const api = fullAPIPath('locations')
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': `JWT ${token}`
+      }
+    }
+    try {
+      const res = await axios.get(api, config)
+      return {err: null, data: res.data}
+    } catch (err) {
+      return {err, data: null}
+    }
+  },
+  async getLocation(token, id){
+    const api = `${fullAPIPath('location')}/${id}`
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': `JWT ${token}`
+      }
+    }
+    try {
+      const res = await axios.get(api, config)
+      return {err: null, data: res.data}
+    } catch (err) {
+      return {err, data: null}
+    }
+  },
+  async getLocationsDetail(token){
+    const locs = await this.getLocations(token)
+    if(locs.err){
+      return [];
+    }
+    const details = []
+    for(let i = 0; i < locs.data.data.length; i++){  //TODO: Make this faster with a Array.map await instead
+      let curr_loc_id = locs.data.data[i]
+      let curr_loc_detail = await this.getLocation(token, curr_loc_id)
+      if(!curr_loc_detail.err) details.push(curr_loc_detail.data.data)
+    }
+    return details
   }
 }
 

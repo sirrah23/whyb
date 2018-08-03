@@ -39,7 +39,11 @@ export default{
         this.$router.replace({name: 'home'})
       }
     },
+    clearSessionData (){
+      this.$store.commit('reset')
+    },
     logout () {
+      this.clearSessionData()
       this.setAuthenticated(false)
       auth.clear_auth_token()
     }
