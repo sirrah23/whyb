@@ -74,8 +74,8 @@ export default {
       const loc = this.buildLocObj()
       api.locationAPI.addLocation(token, loc)
         .then((res) => {
-          if(res.err){
-            console.log(err); //TODO: Do something useful?
+          if (res.err) {
+            console.log(res.err) // TODO: Do something useful?
             return
           }
           this.$store.commit('addLocation', res.data.data)
@@ -89,14 +89,13 @@ export default {
       return this.$store.getters.locations
     }
   },
-  mounted(){
+  mounted () {
     const token = auth.get_auth_token()
-    if(!token) return
+    if (!token) return
     api.locationAPI.getLocationsDetail(token)
       .then(locs => {
-        for(let i = 0; i < locs.length; i++)
-          this.$store.commit('addLocation', locs[i])
-        })
+        for (let i = 0; i < locs.length; i++) { this.$store.commit('addLocation', locs[i]) }
+      })
       .catch(e => console.log(e))
   }
 }

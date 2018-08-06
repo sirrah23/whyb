@@ -1,8 +1,8 @@
 import axios from 'axios'
 
 function fullAPIPath (path) {
-    const API_HOST = 'http://localhost:5000'
-    return `${API_HOST}/${path}`
+  const API_HOST = 'http://localhost:5000'
+  return `${API_HOST}/${path}`
 }
 
 const authAPI = {
@@ -25,7 +25,7 @@ const authAPI = {
 }
 
 const locationAPI = {
-  async addLocation(token, {name, latitude, longitude}){
+  async addLocation (token, {name, latitude, longitude}) {
     const api = fullAPIPath('locations')
     const data = {name, latitude, longitude}
     const config = {
@@ -42,7 +42,7 @@ const locationAPI = {
       return {err, data: null}
     }
   },
-  async getLocations(token){
+  async getLocations (token) {
     const api = fullAPIPath('locations')
     const config = {
       headers: {
@@ -58,7 +58,7 @@ const locationAPI = {
       return {err, data: null}
     }
   },
-  async getLocation(token, id){
+  async getLocation (token, id) {
     const api = `${fullAPIPath('location')}/${id}`
     const config = {
       headers: {
@@ -74,16 +74,16 @@ const locationAPI = {
       return {err, data: null}
     }
   },
-  async getLocationsDetail(token){
+  async getLocationsDetail (token) {
     const locs = await this.getLocations(token)
-    if(locs.err){
-      return [];
+    if (locs.err) {
+      return []
     }
     const details = []
-    for(let i = 0; i < locs.data.data.length; i++){  //TODO: Make this faster with a Array.map await instead
-      let curr_loc_id = locs.data.data[i]
-      let curr_loc_detail = await this.getLocation(token, curr_loc_id)
-      if(!curr_loc_detail.err) details.push(curr_loc_detail.data.data)
+    for (let i = 0; i < locs.data.data.length; i++) { // TODO: Make this faster with a Array.map await instead
+      let currLocId = locs.data.data[i]
+      let currLocDetail = await this.getLocation(token, currLocId)
+      if (!currLocDetail.err) details.push(currLocDetail.data.data)
     }
     return details
   }
@@ -93,4 +93,3 @@ export default {
   authAPI,
   locationAPI
 }
-

@@ -39,7 +39,7 @@ export default{
         this.$router.replace({name: 'home'})
       }
     },
-    clearSessionData (){
+    clearSessionData () {
       this.$store.commit('reset')
     },
     logout () {

@@ -11,7 +11,7 @@ export default new Vuex.Store({
     addLocation (state, loc) {
       state.locations.push(loc)
     },
-    reset(state){
+    reset (state) {
       state.locations = []
     }
   },
