@@ -1,7 +1,8 @@
 import json
 from flask_testing import TestCase
-from main import app, db, User, bcrypt
-from config import TestingConfig
+from whyb_backend import app, db, bcrypt
+from whyb_backend.models import User
+from whyb_backend.config import TestingConfig
 
 
 def create_user(username, password):
