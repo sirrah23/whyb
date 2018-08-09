@@ -3,7 +3,9 @@
     <div id="header">
       <h1 class="display-4">Where have you been?</h1>
     </div>
-    <router-view @authenticated="setAuthenticated" />
+    <router-view @authenticated="setAuthenticated"/>
+    <router-link v-if="loginMode" to="/register" @click.native="toggleMode('register')">Register</router-link>
+    <router-link v-if="registerMode" to="/login" @click.native="toggleMode('login')">Login</router-link>
     <router-link v-if="authenticated" to="/login" @click.native="logout" replace>Logout</router-link>
   </div>
 </template>
@@ -15,7 +17,8 @@ export default{
   name: 'App',
   data () {
     return {
-      authenticated: false
+      authenticated: false,
+      mode: 'login'
     }
   },
   mounted () {
@@ -46,6 +49,17 @@ export default{
       this.clearSessionData()
       this.setAuthenticated(false)
       auth.clear_auth_token()
+    },
+    toggleMode (mode) {
+      this.mode = mode
+    }
+  },
+  computed: {
+    loginMode () {
+      return this.mode === 'login'
+    },
+    registerMode () {
+      return this.mode === 'register'
     }
   }
 }
