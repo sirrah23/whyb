@@ -6,6 +6,26 @@ function fullAPIPath (path) {
 }
 
 const authAPI = {
+  async registerRequest (username, password) {
+    const api = fullAPIPath('register')
+    const data = {username, password}
+    const config = {
+      header: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    }
+    try {
+      const res = await axios.post(api, data, config)
+      if (res.status === 201) {
+        return {err: null, success: true}
+      } else {
+        return {err: res.data, success: false}
+      }
+    } catch (err) {
+      return {err, success: false}
+    }
+  },
   async tokenRequest (username, password) {
     const api = fullAPIPath('auth')
     const data = {username, password}

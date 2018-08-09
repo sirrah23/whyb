@@ -34,6 +34,8 @@
 </template>
 
 <script>
+import api from '@/api.js'
+
 export default {
   name: 'Register',
   data: function () {
@@ -49,8 +51,16 @@ export default {
     submit () {
       const valid = this.validate()
       if (!valid) { return }
-      // TODO: call register API
-      this.setSuccess()
+      api.authAPI.registerRequest(this.username, this.password)
+        .then(res => {
+          console.log(res)
+          if (res.success === true) {
+            this.setSuccess()
+          } else {
+            this.setFail(res.err.response.data)
+          }
+        })
+        .catch(err => console.log(err))
     },
     validate () {
       let errMsg = ''

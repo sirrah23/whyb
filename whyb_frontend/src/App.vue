@@ -39,6 +39,7 @@ export default{
     setAuthenticated (status) {
       this.authenticated = status
       if (status && auth.is_auth_token()) {
+        this.toggleMode('app')
         this.$router.replace({name: 'home'})
       }
     },
@@ -49,6 +50,7 @@ export default{
       this.clearSessionData()
       this.setAuthenticated(false)
       auth.clear_auth_token()
+      this.toggleMode('login')
     },
     toggleMode (mode) {
       this.mode = mode
