@@ -11,6 +11,9 @@ export default new Vuex.Store({
     addLocation (state, loc) {
       state.locations.push(loc)
     },
+    deleteLocation (state, locId) {
+      state.locations = state.locations.filter(loc => loc.id !== locId)
+    },
     reset (state) {
       state.locations = []
     }

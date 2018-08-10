@@ -28,17 +28,24 @@
     <div class="location-list-item" v-for="location in locations" :key="location.id">
       <v-layout>
           <v-flex xs12 sm6 offset-sm3 mt-3 mb-3>
-            <v-expansion-panel>
-              <v-expansion-panel-content>
-              <div slot="header">{{location.name}}</div>
-              <v-card>
-                <v-card-text>Latitude: {{location.latitude}}</v-card-text>
-                <v-card-text>Longitude: {{location.longitude}}</v-card-text>
-              </v-card>
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-flex>
-        </v-layout>
+            <v-card>
+              <v-container fill-height fluid>
+                <v-layout fill-height>
+                  <v-flex xs12 align-end flexbox>
+                      <span class="headline">{{location.name}}</span>
+                        <div>
+                          <span>Latitude: {{location.latitude}}</span><br>
+                          <span>Longitude: {{location.longitude}}</span>
+                        </div>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+          <v-card-actions>
+            <v-btn flat color="red" @click="locationListDelete(location.id)">Delete</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-flex>
+      </v-layout>
     </div>
   </div>
 </template>
@@ -80,6 +87,18 @@ export default {
           }
           this.$store.commit('addLocation', res.data.data)
           this.clearUIInput()
+        })
+        .catch(e => console.log(e))
+    },
+    locationListDelete (locId) {
+      const token = auth.get_auth_token()
+      api.locationAPI.deleteLocation(token, locId)
+        .then((res) => {
+          if (res.err) {
+            console.log(res.err) // TODO: Do something useful?
+            return
+          }
+          this.$store.commit('deleteLocation', locId)
         })
         .catch(e => console.log(e))
     }

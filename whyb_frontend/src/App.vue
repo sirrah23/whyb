@@ -25,6 +25,7 @@ export default{
     if (!this.checkAuthentication()) {
       this.$router.replace({name: 'login'})
     } else {
+      this.toggleMode('app')
       this.$router.replace({name: 'home'})
     }
   },

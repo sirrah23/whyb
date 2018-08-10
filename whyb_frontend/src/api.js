@@ -106,6 +106,26 @@ const locationAPI = {
       if (!currLocDetail.err) details.push(currLocDetail.data.data)
     }
     return details
+  },
+  async deleteLocation (token, locId) {
+    const api = `${fullAPIPath('location')}/${locId}`
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': `JWT ${token}`
+      }
+    }
+    try {
+      const res = await axios.delete(api, config)
+      if (res.status === 204) {
+        return {err: null, data: res.data}
+      } else {
+        return {err: 'Delete failed', data: null}
+      }
+    } catch (err) {
+      return {err, data: null}
+    }
   }
 }
 
