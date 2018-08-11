@@ -42,6 +42,11 @@ export default {
           style: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png'
         }
         this.map = mappa.tileMap(options)
+        //FIXME: We have to call loadSrc ourselves because the Leaflet
+        //constructor is renamed when we run `npm run build` by the minifier
+        //and there is a check in the Leaflet class' constructor which causes
+        //it to run loadSrc iff the constructor name is Leaflet
+        this.map.loadSrc()
         this.map.overlay(this.canvas)
         this.map.onChange(p.drawPoints)
       }
