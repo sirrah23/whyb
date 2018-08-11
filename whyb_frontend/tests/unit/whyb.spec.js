@@ -23,7 +23,7 @@ describe('ListLocation.vue', () => {
     store.commit(
       'addLocation',
       {
-        locationName: 'Location A',
+        name: 'Location A',
         latitude: 30,
         longitude: 30
       }
@@ -31,7 +31,7 @@ describe('ListLocation.vue', () => {
     store.commit(
       'addLocation',
       {
-        locationName: 'Location B',
+        name: 'Location B',
         latitude: 45,
         longitude: 50
       }

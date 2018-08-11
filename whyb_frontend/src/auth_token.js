@@ -1,13 +1,25 @@
+/**
+This mock version of localStorage is used when the window
+version of it is unavailable...it doesn't really do anything
+and is here so that unit tests pass when window is unavailable
+*/
+const mockStorage = {
+  getItem () {},
+  setItem () {},
+  removeItem () {}
+}
+
 export default {
   tokenField: 'whyb-auth-token',
+  storage: window.localStorage || mockStorage,
   get_auth_token () {
-    return window.localStorage.getItem(this.tokenField)
+    return this.storage.getItem(this.tokenField)
   },
   set_auth_token (newToken) {
-    window.localStorage.setItem(this.tokenField, newToken)
+    this.storage.setItem(this.tokenField, newToken)
   },
   clear_auth_token () {
-    window.localStorage.removeItem(this.tokenField)
+    this.storage.removeItem(this.tokenField)
   },
   is_auth_token () {
     return this.get_auth_token() !== null
